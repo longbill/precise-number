@@ -1,5 +1,11 @@
 # Perform plus, minus, multiply and division algorithms precisely using javascript
 
+## Install
+
+```
+npm install precise-number --save
+```
+
 ## Methods
 
 ```
