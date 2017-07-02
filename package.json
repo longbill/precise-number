@@ -1,10 +1,10 @@
 {
   "name": "precise-number",
-  "version": "0.0.1",
-  "description": "perform plus, minus, multiply, division algorithms precisely.",
+  "version": "1.0.0",
+  "description": "perform plus, minus, multiply and division algorithms precisely.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "node test.js"
   },
   "author": "Chunlong",
   "license": "MIT"

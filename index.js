@@ -1,79 +1,91 @@
-'use strict';
+/**
+ * npm install precise-number
+ * author: Chunlong (jszen.com)
+ * 2017-07-02
+ */
 
-
-let methods = {
+let N = {
 
 	/**
 	 * N.add( n1, n2 [,n3...])
 	 * alias: N.plus
 	 */
-	add: function() {
-		let args = Array.from(arguments).map(r=>{
-			if (typeof r === 'string') return r.replace(/\,|\s/g,'');
-			return r;
-		});
-		let rs = [],m,s=0;
-		args.map(r=>{
-			let arr = r.toString().split('.');
-			rs.push( (arr.length > 1) ? arr[1].length : 0 );
-		});
-		m = Math.pow(10,Math.max.apply(null,rs));
-		args.map(r=>{
-			s += Math.round(r*m);
-		});
-		return s/m;
+	add(...args) {
+		let m = Math.pow(10, Math.max(...args.map(r=>decimalLength(r))));
+		return sum(...args.map(cleanNumber).map(r=>Math.round( r*m ))) / m;
 	},
 
 	/**
 	 * alias: N.minus
 	 */
-	sub: function(arg1,arg2) {
-		return this.add(arg1,-1*arg2);
+	sub(...args) {
+		return N.add(...args.map(cleanNumber).map((n, i)=>( (i > 0) ? -1 : 1 ) * n));
 	},
 
-	equal: function(a, b) {
-		return Math.abs( this.parse(a) - this.parse(b) ) < 1e-100;
+	equal(a, b) {
+		return Math.abs( N.parse(a) - N.parse(b) ) < 1e-100;
 	},
 
 	/**
 	 * N.multiply(n1, n2 [, n3 ...])
 	 * alias: N.mul, N.multi
 	 */
-	multiply: function() {
-		let args = Array.from(arguments), m=0;
-		args.map(r=>{
-			let arr = r.toString().split('.');
-			m += (arr.length > 1) ? arr[1].length : 0;
-		});
-		return args.reduce(function(a,b){
-			return Number(a.toString().replace(/\,|\./g,''))*Number(b.toString().replace(/\,|\./g,''));
-		},1)/Math.pow(10, m);
+	multiply(...args) {
+		return args.map(cleanNumber).reduce((a, b) => {
+			return toInt(a) * toInt(b);
+		}, 1) / Math.pow(10, sum(...args.map(r=>decimalLength(r))));
 	},
 
-
-	divide: function(arg1,arg2) {
-		var t1=0,t2=0,r1,r2;
-		try{t1=arg1.toString().split(".")[1].length}catch(e){}
-		try{t2=arg2.toString().split(".")[1].length}catch(e){}
-		r1=Number(arg1.toString().replace(/\,|\./g,""))
-		r2=Number(arg2.toString().replace(/\,|\./g,""))
-		return (r1/r2)*Math.pow(10,t2-t1);
+	divide(a, b) {
+		return (toInt(a) / toInt(b)) * Math.pow(10, decimalLength(b) - decimalLength(a));
 	},
 
 	parse(n, decimal) {
 		if (!n || !n.toString || isNaN(n)) return 0;
-		n = n.toString().replace(/\,/g,'');
+		n = cleanNumber(n);
 		if (decimal === undefined) return n*1;
 		let p = Math.pow(10, decimal);
-		return Math.round(n*p)/p;
+		return Math.round(n * p) / p;
 	}
 
 };
 
-methods.plus = methods.add;
-methods.minus = methods.sub;
-methods.mul = methods.multiply;
-methods.multi = methods.multiply;
-methods.div = methods.divide;
+//make aliases
+N.plus = N.add;
+N.sumOf = N.add;
+N.minus = N.sub;
+N.equals = N.equal;
+N.mul = N.multiply;
+N.multi = N.multiply;
+N.productOf = N.multiply;
+N.div = N.divide;
 
-module.exports = methods;
+//calculate the decimal part length of a number
+function decimalLength(n) {
+	let parts = cleanNumber(n).toString().split('.', 2);
+	if (parts.length === 1) return 0;
+	return parts[1].length;
+}
+
+//pure number sum
+function sum(...args) {
+	return args.reduce((acc, n) => {
+		return acc+=n;
+	}, 0);
+}
+
+//remove , space from a string number
+function cleanNumber(r) {
+	if (typeof r === 'string') return r.replace(/\,|\s/g,'');
+	return r;
+}
+
+// decimal to int
+function toInt(n) {
+	return Number( cleanNumber(n).toString().replace('.', '') );
+}
+
+N.decimalLength = decimalLength;
+N.cleanNumber = cleanNumber;
+
+module.exports = N;
