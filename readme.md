@@ -13,6 +13,8 @@ npm install precise-number --save
 ## Methods
 
 ```
+const N = require('precise-number');
+
 N.add( n1, n2 [,n3...]) //alias N.plus
 
 N.sub( n1, n2 )  //alias N.minus
@@ -22,6 +24,15 @@ N.multiply(n1, n2 [, n3 ...])  //alias N.mul, N.multi, N.productOf
 N.divide(n1, n2) //alias N.div
 
 N.parse(number_string, decimal) //string to number with decimals
+
+```
+
+## Chain
+```
+N(1).add(2).multi(3).valueOf() === 9
+N(1).add(2).multi(3) + 0 === 9
+N(1).add(2).multi(3) * 1 === 9
+N(1).add(2).multi(3) !== 9
 
 ```
 
@@ -52,4 +63,7 @@ N.div(1, 2) === 0.5
 N.div(1.11, 1.11) === 1
 N.div(1, 3) === 0.3333333333333333
 N.div('100,102.11', 2) === 50051.055
+
+//chain
+N(1).multi(8.2).add(0.8).div(3) * 1 === 3
 ```
