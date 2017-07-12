@@ -119,7 +119,7 @@ N.parse = function(n, decimal) {
 	n = cleanNumber(n);
 	if (decimal === undefined) return n*1;
 	let p = Math.pow(10, decimal);
-	return Math.round(n * p) / p;
+	return Math.floor(n * p) / p;
 };
 
 
