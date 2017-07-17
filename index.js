@@ -11,7 +11,9 @@ function N(n) {
 class PNumber {
 
 	constructor(n) {
-		if (typeof n === 'string' || typeof n === 'number') {
+		if (n && n instanceof PNumber) {
+			this.number = n.valueOf();
+		} else if (typeof n === 'string' || typeof n === 'number') {
 			this.number = N.parse(n);
 		} else {
 			throw new Error('precise-number can only accept string or number type');

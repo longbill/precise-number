@@ -38,4 +38,10 @@ equal( N.div('100,102.11', 2), 50051.055);
 
 equal( N(1).multi(8.2).add(0.8).div(3) * 1, 3);
 
+let a = N(1).multi(8.2).add(0.8).div(3);
+let b = N(a).add(2);
+let c = N(3).add(b);
+let d = N(c).multi(b);
+console.log(a,b,c,d);
+
 console.log('all passed');
