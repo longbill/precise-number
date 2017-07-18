@@ -80,6 +80,25 @@ class PNumber {
 	valueOf() {
 		return this.number;
 	}
+
+	round(decimal) {
+		decimal = Math.pow(10, decimal);
+		return this.setValue(Math.round( this.number*decimal ) / decimal);
+	}
+
+	floor(decimal) {
+		decimal = Math.pow(10, decimal);
+		return this.setValue(Math.floor( this.number*decimal ) / decimal);
+	}
+
+	ceil(decimal) {
+		decimal = Math.pow(10, decimal);
+		return this.setValue(Math.ceil( this.number*decimal ) / decimal);
+	}
+
+	toFixed(decimal) {
+		return this.floor(decimal).toString();
+	}
 }
 
 /**

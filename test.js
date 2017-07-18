@@ -46,4 +46,5 @@ let c = N(3).add(b);
 let d = N(c).multi(b);
 console.log(a,b,c,d);
 
+
 console.log('all passed');
