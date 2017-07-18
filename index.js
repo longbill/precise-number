@@ -113,7 +113,16 @@ N.multiply = function(...args) {
 };
 
 N.divide = function(a, b) {
-	return (toInt(a) / toInt(b)) * Math.pow(10, decimalLength(b) - decimalLength(a));
+	let m = Math.pow(10, decimalLength(b) - decimalLength(a));
+	let v = toInt(a) / toInt(b);
+	if ( m > 1 ) {
+		return v * m;
+	} else if ( m < 1) {
+		return v / Math.pow(10, decimalLength(a) - decimalLength(b));
+	} else {
+		return v;
+	}
+	// return (toInt(a) / toInt(b)) * Math.pow(10, decimalLength(b) - decimalLength(a));
 };
 
 N.parse = function(n, decimal) {

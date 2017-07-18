@@ -1,6 +1,6 @@
 {
   "name": "precise-number",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "perform plus, minus, multiply and division algorithms precisely.",
   "main": "index.js",
   "repository": "https://github.com/longbill/precise-number.git",
