@@ -83,17 +83,17 @@ class PNumber {
 
 	round(decimal) {
 		decimal = Math.pow(10, decimal);
-		return this.setValue(Math.round( this.number*decimal ) / decimal);
+		return this.setValue(Math.round( this.number*decimal ) / decimal) * 1;
 	}
 
 	floor(decimal) {
 		decimal = Math.pow(10, decimal);
-		return this.setValue(Math.floor( this.number*decimal ) / decimal);
+		return this.setValue(Math.floor( this.number*decimal ) / decimal) * 1;
 	}
 
 	ceil(decimal) {
 		decimal = Math.pow(10, decimal);
-		return this.setValue(Math.ceil( this.number*decimal ) / decimal);
+		return this.setValue(Math.ceil( this.number*decimal ) / decimal) * 1;
 	}
 
 	toFixed(decimal) {
