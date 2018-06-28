@@ -21,7 +21,7 @@ N.sub( n1, n2 )  //alias N.minus
 
 N.multiply(n1, n2 [, n3 ...])  //alias N.mul, N.multi, N.productOf
 
-N.divide(n1, n2) //alias N.div
+N.divide(n1, n2) //alias N.div N.dividedBy
 
 N.parse(number_string, decimal) //string to number with decimals
 

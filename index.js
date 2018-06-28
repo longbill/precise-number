@@ -74,7 +74,7 @@ class PNumber {
 	}
 
 	toString() {
-		return this.number+'';
+		return new Exp(this.number).toString();
 	}
 
 	valueOf() {
@@ -101,13 +101,16 @@ class PNumber {
 	}
 }
 
+
 /**
  * N.add( n1, n2 [,n3...])
  * alias: N.plus
  */
 N.add = function(...args) {
-	let m = Math.pow(10, Math.max(...args.map(r=>decimalLength(r))));
-	return sum(...args.map(cleanNumber).map(r=>Math.round( r*m ))) / m;
+	let ns = args.map(a => new Exp(a));
+	let minE = Math.min.apply(null, ns.map(v => v.e));
+	let n = ns.map(n => n.evolveTo(minE)).reduce((acc, n) => acc + n.n, 0);
+	return new Exp(n, minE).toNumber();	
 };
 
 /**
@@ -126,28 +129,23 @@ N.equal = function(a, b) {
  * alias: N.mul, N.multi
  */
 N.multiply = function(...args) {
-	return args.map(cleanNumber).reduce((a, b) => {
-		return toInt(a) * toInt(b);
-	}, 1) / Math.pow(10, sum(...args.map(r=>decimalLength(r))));
+	return args.map(a => new Exp(a)).reduce((a, b) => {
+		a.n *= b.n;
+		a.e += b.e;
+		return a;
+	}, new Exp(1)).toNumber();
 };
 
 N.divide = function(a, b) {
-	let m = Math.pow(10, decimalLength(b) - decimalLength(a));
-	let v = toInt(a) / toInt(b);
-	if ( m > 1 ) {
-		return v * m;
-	} else if ( m < 1) {
-		return v / Math.pow(10, decimalLength(a) - decimalLength(b));
-	} else {
-		return v;
-	}
-	// return (toInt(a) / toInt(b)) * Math.pow(10, decimalLength(b) - decimalLength(a));
+	let v1 = new Exp(a);
+	let v2 = new Exp(b);
+	return new Exp(v1.n / v2.n, v1.e - v2.e).toNumber();
 };
 
 N.parse = function(n, decimal) {
 	if (!n || !n.toString || (isNaN(n) && typeof n === 'number')) return 0;
 	n = cleanNumber(n);
-	if (decimal === undefined) return n*1;
+	if (decimal === undefined) return Number(n);
 	let p = Math.pow(10, decimal);
 	return Math.floor(n * p) / p;
 };
@@ -162,19 +160,18 @@ N.mul = N.multiply;
 N.multi = N.multiply;
 N.productOf = N.multiply;
 N.div = N.divide;
+N.dividedBy = N.div;
 
 //calculate the decimal part length of a number
 function decimalLength(n) {
-	let parts = cleanNumber(n).toString().split('.', 2);
-	if (parts.length === 1) return 0;
-	return parts[1].length;
-}
-
-//pure number sum
-function sum(...args) {
-	return args.reduce((acc, n) => {
-		return acc+=n;
-	}, 0);
+	let ns = cleanNumber(n).toString();
+	let ems = ns.match(/e([\+\-]\d+)$/);
+	let e = 0;
+	if (ems && ems[1]) e = parseInt(ems[1]);
+	ns = ns.replace(/e[\-\+]\d+$/, '');	
+	let parts = ns.split('.', 2);
+	if (parts.length === 1) return -e;
+	return parts[1].length - e;
 }
 
 //remove , space from a string number
@@ -183,10 +180,68 @@ function cleanNumber(r) {
 	return r;
 }
 
-// decimal to int
-function toInt(n) {
-	return Number( cleanNumber(n).toString().replace('.', '') );
+class Exp {
+	constructor(n, _e) {
+
+		if (n && n instanceof Exp) {
+			this.n = n.n;
+			this.e = n.e;
+			return this;
+		}
+
+		if (_e !== undefined) {
+			this.n = n;
+			this.e = _e;
+			return this;
+		}
+
+		let ns = Number(cleanNumber(n)).toString();
+		let ems = ns.match(/e([\+\-]\d+)$/);
+		let e = 0;
+		if (ems && ems[1]) e = parseInt(ems[1]);
+		ns = ns.replace(/e[\-\+]\d+$/, '');	
+		let parts = ns.split('.', 2);
+		if (parts.length === 1) {
+			this.n = Number(parts[0]);
+			this.e = e;
+		} else {
+			this.n = Number(ns.replace('.', ''));
+			this.e = e - parts[1].length;
+		}
+	}
+
+	evolve(n) {
+		this.n *= Math.pow(10, n);
+		this.e -= n;
+		return this;
+	}
+
+	evolveTo(n) {
+		return this.evolve(this.e - n);
+	}
+
+	toNumber() {
+		return this.e < 0 ? (this.n / Math.pow(10, -this.e)) : this.n * Math.pow(10, this.e);
+	}
+
+	toString() {
+		return this.movePoint(String(this.n), this.e);
+	}
+
+	movePoint(s, n) {
+		if (s.indexOf('.') === -1) s = s + '.0';
+		for (let i = 0; i <= Math.abs(n); i++) s = '0' + s + '0';
+		let pos = s.indexOf('.');
+		s = s.replace('.', '');
+		pos += n;
+		s = s.slice(0, pos) + '.' + s.slice(pos);
+		s = s.replace(/^[0]+|[0]+$/g, '');
+		if (s.match(/^\./)) return '0' + s;
+		if (s.match(/\.$/)) return s.replace('.', '');
+		return s;
+	}
 }
+
 
 N.decimalLength = decimalLength;
 N.cleanNumber = cleanNumber;

@@ -1,8 +1,9 @@
 const equal = require('assert').strictEqual;
-const N = require('./')
+const N = require('./');
 
 //test add
 equal( N(1).add(2).valueOf(), 3);
+equal( N(100000000000000000000).add(200000000000000000000).valueOf(), 300000000000000000000);
 equal( N(1).add(2).add(3).add(4).add(5).add(6.1).valueOf(), 21.1);
 equal( N(1.11).add(1.11)+0, 2.22);
 equal( N(1.11).add(1.11)*1, 2.22);
@@ -35,6 +36,8 @@ equal( N.div(1.11, 1.11), 1);
 equal( N.div(1, 3), 0.3333333333333333);
 equal( N.div('100,102.11', 2), 50051.055);
 
+equal( N.div(0.000000000123, 0.0000000001), 1.23);
+
 
 equal( N(1).multi(8.2).add(0.8).div(3) * 1, 3);
 
@@ -42,11 +45,8 @@ equal( N.div(2.4, 2),  1.2);
 
 equal( N(1.233).round(2), 1.23);
 
-let a = N(1).multi(8.2).add(0.8).div(3);
-let b = N(a).add(2);
-let c = N(3).add(b);
-let d = N(c).multi(b);
-console.log(a,b,c,d);
+equal( N(1.23e-10).toString(), '0.000000000123');
+equal( N(1e+22).toString(), '10000000000000000000000');
 
 
 console.log('all passed');
