@@ -1,6 +1,7 @@
 /**
  * npm install precise-number
- * author: Chunlong (jszen.com)
+ * author: Chunlong 
+ * https://github.com/longbill/precise-number
  * 2017-07-02
  */
 
