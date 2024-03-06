@@ -33,7 +33,7 @@ equal( N.multi('100,102.11', 1.11), 111113.3421);
 equal( N(1.11).divide(1.11) - 1, 0);
 equal( N.div(1, 2), 0.5);
 equal( N.div(1.11, 1.11), 1);
-equal( N.div(1, 3), 0.3333333333333333);
+equal( N.div(1, 3), 0.33333333333333);
 equal( N.div('100,102.11', 2), 50051.055);
 
 equal( N.div(0.000000000123, 0.0000000001), 1.23);
@@ -48,5 +48,8 @@ equal( N(1.233).round(2), 1.23);
 equal( N(1.23e-10).toString(), '0.000000000123');
 equal( N(1e+22).toString(), '10000000000000000000000');
 
-
+//test parse
+let a = '1234567890123.3998999';
+console.log('Number(', a, ') =', Number(a));
+console.log('N.parse(', a, ') =', N.parse(a));
 console.log('all passed');

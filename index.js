@@ -88,11 +88,13 @@ class PNumber {
 	}
 
 	floor(decimal) {
+		if (!decimal) decimal = 0;
 		decimal = Math.pow(10, decimal);
 		return this.setValue(Math.floor( this.number*decimal ) / decimal) * 1;
 	}
 
 	ceil(decimal) {
+		if (!decimal) decimal = 0;
 		decimal = Math.pow(10, decimal);
 		return this.setValue(Math.ceil( this.number*decimal ) / decimal) * 1;
 	}
@@ -146,6 +148,15 @@ N.divide = function(a, b) {
 N.parse = function(n, decimal) {
 	if (!n || !n.toString || (isNaN(n) && typeof n === 'number')) return 0;
 	n = cleanNumber(n);
+	if (typeof n === 'string' && !decimal && n.indexOf('.') !== -1) {
+		n = n.replace(/[0]+$/, '');
+		let parts = n.split('.');
+		if (parts.length !== 2) throw new Error('wrong number format:' + n);
+		decimal = parts[1].length;
+		let digits = n.replace('.', '');
+		let en = new Exp(digits, -decimal);
+		return en.toNumber();
+	}
 	if (decimal === undefined) return Number(n);
 	let p = Math.pow(10, decimal);
 	return Math.floor(n * p) / p;
@@ -222,7 +233,13 @@ class Exp {
 	}
 
 	toNumber() {
-		return this.e < 0 ? (this.n / Math.pow(10, -this.e)) : this.n * Math.pow(10, this.e);
+		let n = this.n;
+		if (String(n).length >= 16) {
+			let len = String(n).length;
+			n = String(n).substr(0, 16);
+			n = Number(String(n).padEnd(len, '0'));
+		}
+		return this.e < 0 ? (n / Math.pow(10, -this.e)) : n * Math.pow(10, this.e);
 	}
 
 	toString() {
