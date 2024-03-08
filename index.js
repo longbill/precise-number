@@ -79,7 +79,7 @@ class PNumber {
 	}
 
 	valueOf() {
-		return this.number;
+		return new Exp(this.number).toNumber();
 	}
 
 	round(decimal) {
@@ -112,7 +112,7 @@ class PNumber {
 N.add = function(...args) {
 	let ns = args.map(a => new Exp(a));
 	let minE = Math.min.apply(null, ns.map(v => v.e));
-	let n = ns.map(n => n.evolveTo(minE)).reduce((acc, n) => acc + n.n, 0);
+	let n = ns.map(n => n.evolveTo(minE)).reduce((acc, n) => acc + n.n, 0n);
 	return new Exp(n, minE).toNumber();	
 };
 
@@ -142,22 +142,14 @@ N.multiply = function(...args) {
 N.divide = function(a, b) {
 	let v1 = new Exp(a);
 	let v2 = new Exp(b);
-	return new Exp(v1.n / v2.n, v1.e - v2.e).toNumber();
+	return new Exp(Number(v1.n) / Number(v2.n), v1.e - v2.e).toNumber();
 };
 
 N.parse = function(n, decimal) {
 	if (!n || !n.toString || (isNaN(n) && typeof n === 'number')) return 0;
-	n = cleanNumber(n);
-	if (typeof n === 'string' && !decimal && n.indexOf('.') !== -1) {
-		n = n.replace(/[0]+$/, '');
-		let parts = n.split('.');
-		if (parts.length !== 2) throw new Error('wrong number format:' + n);
-		decimal = parts[1].length;
-		let digits = n.replace('.', '');
-		let en = new Exp(digits, -decimal);
-		return en.toNumber();
-	}
-	if (decimal === undefined) return Number(n);
+	let en = new Exp(n);
+	if (decimal === undefined) return en.toNumber();
+	n = en.toNumber();
 	let p = Math.pow(10, decimal);
 	return Math.floor(n * p) / p;
 };
@@ -201,29 +193,30 @@ class Exp {
 			return this;
 		}
 
-		if (_e !== undefined) {
-			this.n = n;
-			this.e = _e;
-			return this;
-		}
-
-		let ns = Number(cleanNumber(n)).toString();
+		let ns = cleanNumber(n.toString());
 		let ems = ns.match(/e([\+\-]\d+)$/);
 		let e = 0;
+		if (_e !== undefined) e = parseInt(_e, 10);
+
 		if (ems && ems[1]) e = parseInt(ems[1]);
 		ns = ns.replace(/e[\-\+]\d+$/, '');	
 		let parts = ns.split('.', 2);
 		if (parts.length === 1) {
-			this.n = Number(parts[0]);
+			this.n = BigInt(parts[0]);
 			this.e = e;
 		} else {
-			this.n = Number(ns.replace('.', ''));
+			ns = ns.replace('.', '').replace(/^0+/, '');
+			while(ns.length > 16 || ns[ns.length -1 ] === '0') {
+				e++;
+				ns = ns.substr(0, ns.length - 1);
+			}
+			this.n = BigInt(ns);
 			this.e = e - parts[1].length;
 		}
 	}
 
 	evolve(n) {
-		this.n *= Math.pow(10, n);
+		this.n = this.n * (10n ** BigInt(n));
 		this.e -= n;
 		return this;
 	}
@@ -239,11 +232,15 @@ class Exp {
 			n = String(n).substr(0, 16);
 			n = Number(String(n).padEnd(len, '0'));
 		}
-		return this.e < 0 ? (n / Math.pow(10, -this.e)) : n * Math.pow(10, this.e);
+		return Number(this.toString());
 	}
 
 	toString() {
-		return this.movePoint(String(this.n), this.e);
+		let s = this.movePoint(String(this.n), this.e);
+		while(s.length > 16 && s.indexOf('.') !== -1) {
+			s = s.substr(0, s.length - 1);
+		}	
+		return s;
 	}
 
 	movePoint(s, n) {
@@ -263,5 +260,5 @@ class Exp {
 
 N.decimalLength = decimalLength;
 N.cleanNumber = cleanNumber;
-
+N.Exp = Exp;
 module.exports = N;

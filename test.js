@@ -46,10 +46,17 @@ equal( N.div(2.4, 2),  1.2);
 equal( N(1.233).round(2), 1.23);
 
 equal( N(1.23e-10).toString(), '0.000000000123');
+equal( N('1.23e-10').toString(), '0.000000000123');
 equal( N(1e+22).toString(), '10000000000000000000000');
 
 //test parse
 let a = '1234567890123.3998999';
 console.log('Number(', a, ') =', Number(a));
 console.log('N.parse(', a, ') =', N.parse(a));
+
+equal(N.parse(a), 1234567890123.39);
+
+equal(N('0.000048419454144098404').multiply(0.0000651).toString(), '0.0000000031521');
+
+
 console.log('all passed');
