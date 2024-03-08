@@ -112,7 +112,8 @@ class PNumber {
 N.add = function(...args) {
 	let ns = args.map(a => new Exp(a));
 	let minE = Math.min.apply(null, ns.map(v => v.e));
-	let n = ns.map(n => n.evolveTo(minE)).reduce((acc, n) => acc + n.n, 0n);
+	ns = ns.map(n => n.evolveTo(minE));
+	let n = ns.reduce((acc, n) => acc + n.n, 0n);
 	return new Exp(n, minE).toNumber();	
 };
 
@@ -120,7 +121,10 @@ N.add = function(...args) {
  * alias: N.minus
  */
 N.sub = function(...args) {
-	return N.add(...args.map(cleanNumber).map((n, i)=>( (i > 0) ? -1 : 1 ) * n));
+	args = args.map((v, i) => {
+		return i === 0 ? v : -v;
+	});
+	return N.add(...args);
 };
 
 N.equal = function(a, b) {
@@ -236,11 +240,13 @@ class Exp {
 	}
 
 	toString() {
+		let minus = (this.n < 0n);
+		if (minus) this.n = -this.n;
 		let s = this.movePoint(String(this.n), this.e);
 		while(s.length > 16 && s.indexOf('.') !== -1) {
 			s = s.substr(0, s.length - 1);
-		}	
-		return s;
+		}
+		return (minus ? '-' : '') + s;
 	}
 
 	movePoint(s, n) {
