@@ -60,4 +60,8 @@ equal(N('0.000048419454144098404').multiply(0.0000651).toString(), '0.0000000031
 
 equal( N(0.317481).minus(0.32226848207515) * 1, -0.00478748207515);
 
+a = 3.535e-9;
+let b = 36000000000;
+equal( N(a).multiply(b).div(b).toString(), N(a).toString());
+
 console.log('all passed');

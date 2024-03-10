@@ -206,7 +206,12 @@ class Exp {
 		ns = ns.replace(/e[\-\+]\d+$/, '');	
 		let parts = ns.split('.', 2);
 		if (parts.length === 1) {
-			this.n = BigInt(parts[0]);
+			ns = parts[0];
+			while(ns.length > 16 || ns[ns.length -1 ] === '0') {
+				e++;
+				ns = ns.substr(0, ns.length - 1);
+			}
+			this.n = BigInt(ns);
 			this.e = e;
 		} else {
 			ns = ns.replace('.', '').replace(/^0+/, '');
