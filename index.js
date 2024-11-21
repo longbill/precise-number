@@ -84,19 +84,19 @@ class PNumber {
 
 	round(decimal) {
 		decimal = Math.pow(10, decimal);
-		return this.setValue(Math.round( this.number*decimal ) / decimal) * 1;
+		return Math.round( N(this.number).multiply(decimal) ) / decimal;
 	}
 
 	floor(decimal) {
 		if (!decimal) decimal = 0;
 		decimal = Math.pow(10, decimal);
-		return this.setValue(Math.floor( this.number*decimal ) / decimal) * 1;
+		return Math.floor( N(this.number).multiply(decimal) ) / decimal;
 	}
 
 	ceil(decimal) {
 		if (!decimal) decimal = 0;
 		decimal = Math.pow(10, decimal);
-		return this.setValue(Math.ceil( this.number*decimal ) / decimal) * 1;
+		return Math.ceil( N(this.number).multiply(decimal) ) / decimal;
 	}
 
 	toFixed(decimal) {
