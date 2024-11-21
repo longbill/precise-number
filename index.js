@@ -154,8 +154,7 @@ N.parse = function(n, decimal) {
 	let en = new Exp(n);
 	if (decimal === undefined) return en.toNumber();
 	n = en.toNumber();
-	let p = Math.pow(10, decimal);
-	return Math.floor(n * p) / p;
+	return N(n).floor(decimal);
 };
 
 

@@ -45,6 +45,8 @@ equal( N(139.89).floor(1), 139.8);
 equal( N(139.89).ceil(1), 139.9);
 equal( N(139.89).round(1), 139.9);
 
+equal( N.parse(139.89, 2), 139.89);
+
 equal( N(1).multi(8.2).add(0.8).div(3) * 1, 3);
 
 equal( N.div(2.4, 2),  1.2);
